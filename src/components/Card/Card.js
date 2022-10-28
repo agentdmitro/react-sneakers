@@ -23,7 +23,7 @@ function Card({id, onFav, title, price, img, onPlus, favorited = false, loading 
       <ContentLoader
           speed={2}
           width={178}
-          height={250}
+          height={250}g
           viewBox="0 0 178 265"
           backgroundColor="#f3f3f3"
           foregroundColor="#ecebeb">
