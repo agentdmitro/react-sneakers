@@ -37,10 +37,10 @@ function Card({id, onFav, title, price, img, onPlus, favorited = false, loading 
         <>
         {onFav && 
         <div className={cl.card__fav} onClick={onClickFav}>
-          <img src={isFav === true ? '/img/liked.svg' : '/img/unliked.svg'} alt="header unliked"/>
+          <img src={isFav === true ? 'img/liked.svg' : 'img/unliked.svg'} alt="header unliked"/>
         </div>
         }
-        <img width={133} height={112} src={"/img/sneakers/"+ img +".jpg"} alt="sneakers img" className={cl.card__img} />
+        <img width={133} height={112} src={"img/sneakers/"+ img +".jpg"} alt="sneakers img" className={cl.card__img} />
         <h5>{title}</h5>
         <div className={cl.card__content}>
             <div className={cl.card__price}>

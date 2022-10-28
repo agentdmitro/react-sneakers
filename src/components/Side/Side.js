@@ -68,7 +68,7 @@ function Side({onClose, items = [], onRemove, opened}) {
                   <Info 
                   title={isOrderComplete ? 'Заказ оформлений!' : 'Ваш кошик порожній.'} 
                   descr={isOrderComplete ? `Номер замовлення: ${orderId}` : 'Додайте хоча б 1 товар, щоб це вікно змінилося.'} 
-                  img={isOrderComplete ? '/img/complete-order.jpg' : '/img/empty-cart.jpg'}
+                  img={isOrderComplete ? 'img/complete-order.jpg' : 'img/empty-cart.jpg'}
                   />
                   }
               </div>
@@ -88,7 +88,7 @@ function Side({onClose, items = [], onRemove, opened}) {
                         <b>{Math.round((totalPrice * 0.95))} грн.</b>
                       </li>
                     </ul>
-                    <button disabled={isLoading} onClick={onClickOrder} className="bttn-green">Оформити замовлення <img src="/img/arrow.svg" alt="arrow" /></button>
+                    <button disabled={isLoading} onClick={onClickOrder} className="bttn-green">Оформити замовлення <img src="img/arrow.svg" alt="arrow" /></button>
                   </div>}
 
             

@@ -25,7 +25,7 @@ const renderItems = () => {
         <div className="content__header">
         <h1>{searchValue ? `Пошук за запитом: "${searchValue}"` : 'Весь товар'}</h1>
         <form className="search">
-            <button><img alt="seacrh" src="/img/search.svg"/></button>
+            <button><img alt="seacrh" src="img/search.svg"/></button>
             <input placeholder="Пошук..." onChange={onChangeSearchInput} value={searchValue} />
             {searchValue && <img onClick={()=> setSearchValue('')} src="img/btn-remove.svg" alt="Clear" className="bttn" />}
         </form>
