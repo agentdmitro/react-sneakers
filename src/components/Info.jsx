@@ -13,7 +13,7 @@ export const Info = ({title, descr, img}) => {
         <img src={img} alt="empty" />
         <h2 className="cart__empty-text">{title}</h2>
         <p className="cart__empty-desrc">{descr}</p>
-        <button className="cart__empty-bttn bttn-green" onClick={()=> setCartOpened(false)} ><img src="/img/arrow.svg" alt="arrow" /> Повернутися за покупками!</button>
+        <button className="cart__empty-bttn bttn-green" onClick={()=> setCartOpened(false)} ><img src="img/arrow.svg" alt="arrow" /> Повернутися за покупками!</button>
     </div>
   )
 }

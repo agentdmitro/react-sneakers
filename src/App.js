@@ -122,7 +122,8 @@ function App() {
 
         <Routes>
           <Route 
-          path="/" 
+          path="" 
+          exact
           element={
             <Home 
               searchValue = {searchValue}
@@ -135,8 +136,8 @@ function App() {
               isLoading={isLoading}
             />
           }/>
-          <Route path="/favorites" element={<Favorites />} />
-          <Route path="/orders" element={<Orders />} />
+          <Route path="favorites" element={<Favorites />} exact/>
+          <Route path="orders" element={<Orders />} exact   />
         </Routes>
 
         
