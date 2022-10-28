@@ -1,95 +1,147 @@
+import Header from "./components/Header";
+import Side from "./components/Side/Side";
+import React, {createContext, useEffect, useState} from "react";
+import axios from "axios";
+import {Routes, Route} from 'react-router-dom';
+import Home from "./pages/Home";
+import Favorites from "./pages/Favorites";
+import Orders from "./pages/Orders";
+
+
+export const AppContext = createContext({});
 
 function App() {
+  const [items, setItems] = useState([]);
+  const [cartItems, setCartItems] = useState([]);
+  const [favs, setFavs] = useState([])
+  const [searchValue, setSearchValue] = useState('');
+  const [cartOpened, setCartOpened] = useState(false);
+  const [isLoading, setIsLoading] = useState(true)
+  useEffect(() => {
+      try{
+        async function fetchData(){
+          const [cartResp, favResp, itemsResp] = await Promise.all([
+            axios.get('https://63544bc2ccce2f8c0206bc4e.mockapi.io/cart'), 
+            axios.get('https://63544bc2ccce2f8c0206bc4e.mockapi.io/favorites'), 
+            axios.get('https://63544bc2ccce2f8c0206bc4e.mockapi.io/items')
+            ])
+
+          setIsLoading(false)
+  
+          setCartItems(cartResp.data)
+          setFavs(favResp.data)
+          setItems(itemsResp.data)
+        }
+
+        fetchData()
+
+      }catch(e){
+        alert('Сталася помилка під час обробки даних(')
+        console.log(e)
+      }
+      
+  }, []);
+
+
+
+  const onAddToCart = async (obj) =>{
+   try{
+    const findItem = cartItems.find(cartObj => Number(cartObj.parentId) === Number(obj.id))
+
+    if(findItem){
+      setCartItems((prev) => prev.filter((item) => Number(item.parentId) !== Number(obj.id)))
+      axios.delete(`https://63544bc2ccce2f8c0206bc4e.mockapi.io/cart/${findItem.id}`)
+    }else{
+      setCartItems(prev => [...prev, obj])
+      const {data} = await axios.post('https://63544bc2ccce2f8c0206bc4e.mockapi.io/cart', obj)
+      setCartItems(prev => prev.map(item=> {
+        if(item.parentId === data.parentId){
+          return {
+            ...item, 
+            id: data.id};
+        }
+        return item   
+      }))
+    }
+   }catch(e){
+    alert('Сталася помилка під час виконання операції')
+   }
+  }
+
+  const onAddToFav =  async (obj) =>{
+     try{
+      if(favs.find(favObj=> favObj.id === obj.id)){
+        await axios.delete(`https://63544bc2ccce2f8c0206bc4e.mockapi.io/favorites/${obj.id}`)
+        setFavs((prev)=>prev.filter((item) => item.id !== obj.id)) // Якщо треба видалити візуально
+       }else{
+        const { data } = await axios.post('https://63544bc2ccce2f8c0206bc4e.mockapi.io/favorites', obj)
+        setFavs(prev => [...prev, data])
+       }
+     }catch(e){
+      alert('Упс, виникла помилка')
+      console.log(e)
+     }
+  }
+
+  const onRemoveItem = async (id) => {
+    try{
+
+      axios.delete(`https://63544bc2ccce2f8c0206bc4e.mockapi.io/cart/${id}`)
+
+      setCartItems((prev)=>prev.filter((item) => Number(item.id) !== Number(id)))
+    }catch(e){
+      alert('Сталася помилка під час виконання операції')
+      console.log(e)
+    }
+  }
+  const onChangeSearchInput = (e) => {
+    setSearchValue(e.target.value)
+  }
+
+
+  const isItemAdded = (id) =>{
+    return cartItems.some((obj) => Number(obj.parentId) === Number(id));
+  }
+  
+    cartOpened ? document.body.classList.add('lock') : document.body.classList.remove('lock');
+
   return (
-    <div className="wrap">
-      <header>  
-          <div className="header__logo">
-            <img width={40} height={40} src="/img/logo.png"/>
-            <div className="logo-text">
-              <h3>React sneakers</h3>
-              <p>Магазин найкращих кросівок</p>
-            </div>
+    <AppContext.Provider value={{setCartOpened, items, cartItems, favs, isItemAdded, onAddToFav, setCartItems, onAddToCart}}>
+      <div className='wrap'>
+        
+          <div>
+            <Side 
+              items={cartItems}
+              onClose={() => setCartOpened(false)}
+              onRemove={onRemoveItem}
+              opened={cartOpened}
+            />
           </div>
-          <ul className="header__menu">
-            <li>
-            <div className="img">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M7.54548 18.1818C7.99735 18.1818 8.36366 17.8155 8.36366 17.3636C8.36366 16.9117 7.99735 16.5454 7.54548 16.5454C7.09361 16.5454 6.72729 16.9117 6.72729 17.3636C6.72729 17.8155 7.09361 18.1818 7.54548 18.1818Z" stroke="#9B9B9B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M16.5455 18.1818C16.9973 18.1818 17.3637 17.8155 17.3637 17.3636C17.3637 16.9117 16.9973 16.5454 16.5455 16.5454C16.0936 16.5454 15.7273 16.9117 15.7273 17.3636C15.7273 17.8155 16.0936 18.1818 16.5455 18.1818Z" stroke="#9B9B9B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M1 1H4.27273L6.46545 11.9555C6.54027 12.3321 6.7452 12.6705 7.04436 12.9113C7.34351 13.1522 7.71784 13.2801 8.10182 13.2727H16.0545C16.4385 13.2801 16.8129 13.1522 17.112 12.9113C17.4112 12.6705 17.6161 12.3321 17.6909 11.9555L19 5.09091H5.09091" stroke="#9B9B9B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            </div>
-            400 грн.
-            </li>
-            <li>
-            <div className="img">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M0 10C0 4.579 4.579 0 10 0C15.421 0 20 4.579 20 10C20 13.19 18.408 16.078 16 17.924V18H15.898C14.23 19.245 12.187 20 10 20C7.813 20 5.77 19.245 4.102 18H4V17.924C1.592 16.078 0 13.189 0 10ZM7.12347 15.236C6.59154 15.6639 6.22136 16.2604 6.074 16.927C7.242 17.604 8.584 18 10 18C11.416 18 12.758 17.604 13.926 16.927C13.7785 16.2605 13.4082 15.6641 12.8764 15.2362C12.3445 14.8083 11.6827 14.5744 11 14.573H9C8.3173 14.5742 7.6554 14.808 7.12347 15.236ZM13.7677 13.4117C14.5877 13.9574 15.2286 14.7329 15.61 15.641C17.077 14.182 18 12.176 18 10C18 5.663 14.337 2 10 2C5.663 2 2 5.663 2 10C2 12.176 2.923 14.182 4.39 15.641C4.77144 14.7329 5.41227 13.9574 6.23227 13.4117C7.05227 12.866 8.01501 12.5742 9 12.573H11C11.985 12.5742 12.9477 12.866 13.7677 13.4117ZM6 8C6 5.72 7.72 4 10 4C12.28 4 14 5.72 14 8C14 10.28 12.28 12 10 12C7.72 12 6 10.28 6 8ZM8 8C8 9.178 8.822 10 10 10C11.178 10 12 9.178 12 8C12 6.822 11.178 6 10 6C8.822 6 8 6.822 8 8Z" fill="#9B9B9B"/>
-            </svg>
-            </div>
-            </li>
-          </ul>
-      </header>
-      <div className="content">
-        <h1>Весь товар</h1>
 
-        <div className="cards">
-        <div className="card">
-            <img width={133} height={112} src="/img/sneakers/1.jpg" alt=""></img>
-            <h5>Чоловічі кросівки Nice Blazer Mid Suede</h5>
-            <div className="card__content">
-              <div className="card__price">
-                <span>Ціна</span>
-                <b>1499 грн.</b>
-              </div>
-              <button>
-                <img src="/img/plus.svg"></img>
-              </button>
-            </div>
-        </div>
-        <div className="card">
-            <img width={133} height={112} src="/img/sneakers/1.jpg" alt=""></img>
-            <h5>Чоловічі кросівки Nice Blazer Mid Suede</h5>
-            <div className="card__content">
-              <div className="card__price">
-                <span>Ціна</span>
-                <b>1499 грн.</b>
-              </div>
-              <button>
-                <img src="/img/plus.svg"></img>
-              </button>
-            </div>
-        </div>
-        <div className="card">
-            <img width={133} height={112} src="/img/sneakers/1.jpg" alt=""></img>
-            <h5>Чоловічі кросівки Nice Blazer Mid Suede</h5>
-            <div className="card__content">
-              <div className="card__price">
-                <span>Ціна</span>
-                <b>1499 грн.</b>
-              </div>
-              <button>
-                <img src="/img/plus.svg"></img>
-              </button>
-            </div>
-        </div>
-        <div className="card">
-            <img width={133} height={112} src="/img/sneakers/1.jpg" alt=""></img>
-            <h5>Чоловічі кросівки Nice Blazer Mid Suede</h5>
-            <div className="card__content">
-              <div className="card__price">
-                <span>Ціна</span>
-                <b>1499 грн.</b>
-              </div>
-              <button>
-                <img src="/img/plus.svg"></img>
-              </button>
-            </div>
-        </div>
-        </div>
+        <Header onClickCart={() => setCartOpened(true)} />
 
-      </div>
+        <Routes>
+          <Route 
+          path="/" 
+          element={
+            <Home 
+              searchValue = {searchValue}
+              items = {items}
+              cartItems = {cartItems}
+              onAddToFav={onAddToFav} 
+              onAddToCart = {onAddToCart}
+              onChangeSearchInput = {onChangeSearchInput}
+              setSearchValue = {setSearchValue}
+              isLoading={isLoading}
+            />
+          }/>
+          <Route path="/favorites" element={<Favorites />} />
+          <Route path="/orders" element={<Orders />} />
+        </Routes>
+
+        
     </div>
+    </AppContext.Provider>
   );
 }
 

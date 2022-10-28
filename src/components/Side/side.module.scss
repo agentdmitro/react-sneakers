@@ -1,0 +1,15 @@
+.sideWrap{
+    display: none;
+}
+
+.sideWrapOpen{
+    display: block;
+    & > .sideOpen{
+        transform: translateX(0);
+    }
+}
+
+.bgShow{
+    opacity: 1;
+    pointer-events: all;
+}

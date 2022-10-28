@@ -1,0 +1,47 @@
+
+  
+  .card{
+    border: 1px solid #f1f1f1;
+    padding: 2rem;
+    width: 22rem;
+    border-radius: 4rem;
+    margin: 0 auto;
+    transition: all .2s ease-in-out;
+    position: relative;
+    cursor: pointer;
+    &__fav{
+      position: absolute;
+      cursor: pointer;
+    }
+  
+    &__img{
+      display: flex;
+      margin: 0 auto;
+    }
+  
+    h5{
+      margin: 2rem 0;
+    }
+  
+    &__content{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+  
+    &__price{
+      display: flex;
+      flex-direction: column;
+      span{
+        text-transform: uppercase;
+        opacity: 0.5;
+        margin-bottom: 0.5rem;
+      }
+    }
+  
+    &:hover{
+      box-shadow: 0 14px 30px rgba(0,0,0,0.2);
+      transform: translateY(-3px);
+    }
+  
+  }
